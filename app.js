@@ -4,28 +4,34 @@
 const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
+const expressHbs = require('express-handlebars');
 
 const app = express();
 
-const adminRoutes = require('./public/routes/admin');
-const shopRoutes = require('./public/routes/shop');
+app.engine('hbs', expressHbs());
+app.set('view engine', 'hbs');
+app.set('views', 'views');
+
+const adminData = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/admin', adminRoutes);
+app.use('/admin', adminData.routes);
 app.use(shopRoutes);
 
 
 // thêm lỗi 404
 app.use((req, res, next) => {
-  res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
+  // res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
+  res.status(404).render('404', { pageTitle: "Page Not Found" })
 });
 
 // console.log(routes.someText);
 
 // const server = http.createServer(routes.handler);
-// const server = http.createServer(app);
+// const server = http.createServer(app);  
 
 // server.listen(3000);
 app.listen(3000);
